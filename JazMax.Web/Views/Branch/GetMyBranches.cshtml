@@ -1,0 +1,18 @@
+﻿@model IEnumerable<JazMax.Web.ViewModel.UserAccountView.CoreBranchView>
+@using JazMax.Core.SystemHelpers
+
+@{
+    ViewBag.Title = "My Branches";
+    JazMaxIdentityHelper.UserName = HttpContext.Current.User.Identity.Name;
+}
+
+@if (JazMaxIdentityHelper.IsUserInRole("PA"))
+{
+    <h2>Branches in your province: @JazMaxIdentityHelper.GetPAUserInformation(User.Identity.Name).Province</h2>
+    <p>
+        @Html.ActionLink("Add Branch", "Create", "Branch")
+    </p>
+
+}
+
+@Html.Partial("_List", Model)

@@ -1,0 +1,24 @@
+﻿
+@helper GenderHelper(string genderId)
+{
+if (genderId == "1")
+{
+        <p>Male</p>
+}
+else
+{
+        <p>Female</p>
+}
+}
+
+@helper IsActiveToString(string isActive)
+{
+if (isActive == "true")
+{
+        <span>Active</span>
+}
+else
+{
+        <span>Deactivated</span>
+}
+}

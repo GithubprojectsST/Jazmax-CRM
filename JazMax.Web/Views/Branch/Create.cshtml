@@ -1,0 +1,343 @@
+﻿@model JazMax.Web.ViewModel.UserAccountView.CoreBranchView
+@using JazMax.Core.SystemHelpers
+@{
+    ViewBag.Title = "Create";
+    JazMaxIdentityHelper.UserName = User.Identity.Name;
+}
+
+<div id="createDiv">
+    <h2>Add Branch</h2>
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.BranchName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.BranchName, new { htmlAttributes = new { @class = "form-control" } })
+                <div id="errorBranch"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control" } })
+                <div id="phoneError"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmailAddress, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmailAddress, new { htmlAttributes = new { @class = "form-control" } })
+                <div id="errorEmail"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StreetAddress, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StreetAddress, new { htmlAttributes = new { @class = "form-control" } })
+                <div id="errorStreetAddress"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                <div id="errorCity"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Suburb, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Suburb, new { htmlAttributes = new { @class = "form-control" } })
+                <div id="errorSuburb"></div>
+            </div>
+        </div>
+
+        @if (JazMaxIdentityHelper.IsUserInRole("PA"))
+        {
+            Html.HiddenFor(model => model.ProvinceId);
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CoreTeamLeaderId, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.DropDownListFor(model => model.CoreTeamLeaderId, JazMaxDropDownList.GetAllTeamLeadersThatAreNotAssigned(JazMaxIdentityHelper.GetPAUserInformation(User.Identity.Name).ProvinceId), new { htmlAttributes = new { @class = "form-control" } })
+                <div id="teamDrop"></div>
+                @Html.ValidationMessageFor(model => model.CoreTeamLeaderId, "", new { @class = "text-danger" })
+            </div>
+
+        }
+        else
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.ProvinceId, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.ProvinceId, JazMaxDropDownList.GetAllProvince(), new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ProvinceId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div id="ashBranch" hidden>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CoreTeamLeaderId, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <div id="teamDrop"></div>
+                        @Html.ValidationMessageFor(model => model.CoreTeamLeaderId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+        }
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                @if (!JazMaxIdentityHelper.IsUserInRole("PA"))
+                {
+                    <input id="Save" type="button" class="btn btn-success" value="Save" onclick="save();" />
+                }
+                else
+                {
+                    <input id="Save" type="button" class="btn btn-success" value="Save" onclick="savePA();" />
+                }
+
+                <input id="Reset" type="button" class="btn btn-info" value="Reset" onclick="Reset();" />
+            </div>
+        </div>
+
+        <div id="loading">
+            <img src="~/Content/LoadCon.gif" id="myimage" width="50px" height="50px" hidden />
+        </div>
+    </div>
+</div>
+<div id="showList" hidden>
+    @{
+        Html.RenderAction("Index", "Branch");
+    }
+</div>
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script>
+
+    $('#ProvinceId').on('change', function () {
+        $('#ashBranch').fadeIn();
+        $("#ashBranch").fadeIn("slow");
+        $("#ashBranch").fadeIn(3000);
+    });
+
+</script>
+
+@if (!JazMaxIdentityHelper.IsUserInRole("PA"))
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $('#ProvinceId').change(function () {
+
+                $.ajax({
+                    type: "post",
+                    url: "/Branch/GetTeamLeaderForProvince",
+                    data: { Id: $('#ProvinceId').val() },
+                    datatype: "json",
+                    traditional: true,
+                    success: function (data) {
+                        var district = "<select id='ddlDistrict'>";
+                        district = district + '<option value="-999">--Select--</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            district = district + '<option value=' + data[i].Id + '>' + data[i].DisplayName + '</option>';
+                        }
+                        district = district + '</select>';
+                        $('#teamDrop').html(district);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+    function save() {
+        debugger;
+        var count = 0;
+        if ($('#BranchName').val() == '')
+        {
+            toastr.error('Please enter a branch name');
+            count++;
+        }
+        if ($('#Phone').val() == '') {
+            toastr.error('Please enter a phone number');
+            count++;
+        }
+        if ($('#EmailAddress').val() == '') {
+            toastr.error('Please enter an email address');
+            count++;
+        }
+        if ($('#StreetAddress').val() == '') {
+            toastr.error('Please enter a street address');
+            count++;
+        }
+        if ($('#City').val() == '') {
+            toastr.error('Please enter a city');
+            count++;
+        }
+        if ($('#Suburb').val() == '') {
+            toastr.error('Please enter a suburb');
+            count++;
+        }
+
+        if($('#ddlDistrict').val() == '-999')
+        {
+            toastr.error('Please choose a teamleader');
+            count++;
+        }
+
+        if (count == 0) {
+            $("#Save").attr("disabled", true);
+            $('#myimage').show();
+            $.ajax({
+                type: 'Post',
+                dataType: 'Json',
+                data: {
+                    CoreTeamLeaderId: $('#ddlDistrict').val(),
+                    ProvinceId: $('#ProvinceId').val(),
+                    BranchName: $('#BranchName').val(),
+                    Phone: $('#Phone').val(),
+                    EmailAddress: $('#EmailAddress').val(),
+                    StreetAddress: $('#StreetAddress').val(),
+                    City: $('#City').val(),
+                    Suburb: $('#Suburb').val(),
+                },
+                url: '@Url.Action("Save", "Branch")',
+                success: function (da) {
+                    if (da.Result == "Success") {
+                        toastr.success('Saved Sucessfully')
+                            $('#BranchName').val(null);
+                            $('#EmailAddress').val(null);
+                            $('#Phone').val(null);
+                            $('#EmailAddress').val(null);
+                            $('#StreetAddress').val(null);
+                            $('#City').val(null);
+                            $('#Suburb').val(null);
+                        $('#Save').removeAttr("disabled");
+                        $('#myimage').hide();
+
+                    } else {
+
+                        alert('Error' + da.Message);
+                    }
+                },
+                error: function (da) {
+                    alert('Error');
+                }
+            });
+        }
+    }
+    </script>
+
+}
+
+    @*Save as a personal assistant*@
+    <script>
+    function savePA()
+    {
+        var count = 0;
+
+        if ($('#BranchName').val() == '') {
+            $('#errorBranch').html('Please enter a branch name');
+            count++;
+        }
+        if ($('#Phone').val() == '') {
+            $('#phoneError').html('Please enter a phone number');
+            count++;
+        }
+        if ($('#EmailAddress').val() == '') {
+            $('#errorEmail').html('Please enter an email address');
+            count++;
+        }
+        if ($('#StreetAddress').val() == '') {
+            $('#errorStreetAddress').html('Please enter a street address');
+            count++;
+        }
+        if ($('#City').val() == '') {
+            $('#errorCity').html('Please enter a city');
+            count++;
+        }
+        if ($('#Suburb').val() == '') {
+            $('#errorSuburb').html('Please enter a suburb');
+            count++;
+        }
+
+        if (count == 0) {
+
+            $("#Save").attr("disabled", true);
+            $('#myimage').show();
+            debugger;
+            $.ajax({
+                type: 'Post',
+                dataType: 'Json',
+                data: {
+                    CoreTeamLeaderId: $('#CoreTeamLeaderId').val(),
+                    ProvinceId: $('#ProvinceId').val(),
+                    BranchName: $('#BranchName').val(),
+                    Phone: $('#Phone').val(),
+                    EmailAddress: $('#EmailAddress').val(),
+                    StreetAddress: $('#StreetAddress').val(),
+                    City: $('#City').val(),
+                    Suburb: $('#Suburb').val(),
+                },
+                url: '@Url.Action("Save", "Branch")',
+                success: function (da) {
+                    if (da.Result == "Success") {
+                        toastr.success('Saved Sucessfully')
+
+                        $('#BranchName').val(null);
+                        $('#EmailAddress').val(null);
+                        $('#Phone').val(null);
+                        $('#EmailAddress').val(null);
+                        $('#StreetAddress').val(null);
+                        $('#City').val(null);
+                        $('#Suburb').val(null);
+
+                        $('#Save').removeAttr("disabled");
+                        $('#myimage').hide();
+
+
+                    } else {
+
+                        alert('Error' + da.Message);
+                    }
+                },
+                error: function (da) {
+                    alert('Error');
+                }
+            });
+        }
+    }
+    </script>
+
+    @*Reset page*@
+    <script>
+        function Reset() {
+            $('#BranchName').val(null);
+            $('#Phone').val(null);
+            $('#EmailAddress').val(null);
+            $('#StreetAddress').val(null);
+            $('#City').val(null);
+            $('#Suburb').val(null);
+            $('#ddlDistrict').val(null);
+            $('#ashBranch').hide();
+        }
+    </script>

@@ -1,0 +1,317 @@
+﻿@model JazMax.Web.ViewModel.UserAccountView.CoreUserDetails
+@using JazMax.Core.SystemHelpers
+@{
+    ViewBag.Title = "User Details";
+    JazMaxIdentityHelper.UserName = User.Identity.Name;
+
+}
+
+
+
+<h3>@Model.FirstName @Model.LastName</h3>
+<h4>Type: @Model.UserType</h4>
+<h4>
+    Status: @if (Model.isActive)
+    { <span class="glyphicon glyphicon-ok"></span> }
+    else
+    { <span class="glyphicon glyphicon-remove"></span> }
+</h4>
+<div class="modal-body row">
+
+    <div class="col-md-3">
+
+        <div class="panel-group">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Profile Picture</div>
+                <div class="panel-body" >
+
+                   
+                    <img src="https://jazmaxdev.blob.core.windows.net/testimage/26072754_172665816675442_3829748120808325120_n.jpg" alt="Smiley face" height="240" width="200" align="center">
+
+                </div>
+            </div>
+        </div>
+
+@if (JazMaxIdentityHelper.IsUserInRole("Admin,CEO,TeamLeader,PA"))
+{
+        <div class="panel-group">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Quick Actions</div>
+                <div class="panel-body">
+
+                   
+     
+
+                    @Html.Partial("_UserActiveModal", Model)
+                    <br />
+                    <br />
+
+                    @if (Model.CoreUserTypeId == 4)
+                    {
+                    @Html.Partial("_UserMoveBranch", Model)
+                    }
+
+                </div>
+            </div>
+        </div>
+}
+
+    </div>
+
+    <div class="col-md-5">
+        <div class="panel-group">
+            <div class="panel panel-primary">
+                <div class="panel-heading">User</div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.MiddleName, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.MiddleName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IDNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.IDNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.IDNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CellPhone, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.CellPhone, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.CellPhone, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        @if (JazMaxIdentityHelper.IsUserInRole("Admin,CEO,TeamLeader,PA"))
+                        {
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input id="Save" type="button" class="btn btn-success" value="Save" onclick="Update();" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <div class="col-md-4">
+
+        @if (Model.CoreUserTypeId == 3 || Model.CoreUserTypeId == 4)
+        {
+
+            <div class="panel-group">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Branch</div>
+                    <div class="panel-body">
+
+                        @Html.Partial("_UserBranchDetails", Model.UserBranchDetails)
+
+                    </div>
+                </div>
+            </div>
+
+        }
+        <br />
+
+        @if (Model.CoreUserTypeId == 4)
+        {
+
+            <div class="panel-group">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Province</div>
+                    <div class="panel-body">
+                        @Html.Partial("_UserProvinceDetails", Model.UserProvinceDetails)
+
+                    </div>
+                </div>
+            </div>
+
+        }
+
+    </div>
+
+</div>
+
+<div class="modal-body row">
+    <div class="col-lg-offset-0">
+        <div class="panel-group">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Edit Log</div>
+                <div class="panel-body">
+
+                    @{
+    Html.RenderAction("GetLog", "Log", new { tableName = "CoreUser", id = Model.CoreUserId });
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $("#show").click(function () {
+        $("#editTheDiv").toggle();
+    });
+
+</script>
+
+<script>
+    function Update() {
+      
+            $.ajax({
+                type: 'Post',
+                dataType: 'Json',
+                data: {
+                    coreUserId: @Model.CoreUserId,
+                    FirstName: $('#FirstName').val(),
+                    LastName: $('#LastName').val(),
+                    MiddleName: $('#MiddleName').val(),
+                    PhoneNumber: $('#PhoneNumber').val(),
+                    CellPhone: $('#CellPhone').val(),
+                    IDNumber: $('#IDNumber').val(),
+
+                },
+                url: '@Url.Action("UpdateCoreUser", "User")',
+                success: function (da) {
+                    if (da.Result == "Success") {
+                        document.location.reload(true)
+                        toastr.success('user has been updated');
+                    } else {
+
+                        alert('Error' + da.Message);
+                    }
+                },
+                error: function (da) {
+                    alert('Error');
+                }
+            });
+    }
+</script>
+
+<style>
+    .modal-dialog {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) !important;
+    }
+</style>
+
+<script>
+    function DeactivateUser() {
+
+            $.ajax({
+                type: 'Post',
+                dataType: 'Json',
+                data: {
+                    coreUserId: @Model.CoreUserId
+                },
+                url: '@Url.Action("Deactivate", "User")',
+                success: function (da) {
+                    if (da.Result == "Success") {
+                        document.location.reload(true)
+                       // toastr.success('user has been updated');
+                    } else {
+
+                        alert('Error' + da.Message);
+                    }
+                },
+                error: function (da) {
+                    alert('Error');
+                }
+            });
+    }
+</script>
+
+<script>
+    function ActivateUser() {
+
+            $.ajax({
+                type: 'Post',
+                dataType: 'Json',
+                data: {
+                    coreUserId: @Model.CoreUserId
+                },
+                url: '@Url.Action("Activate", "User")',
+                success: function (da) {
+                    if (da.Result == "Success") {
+                        document.location.reload(true)
+                       // toastr.success('user has been updated');
+                    } else {
+
+                        alert('Error' + da.Message);
+                    }
+                },
+                error: function (da) {
+                    alert('Error');
+                }
+            });
+    }
+</script>
+
+<script>
+    function MoveAgent() {
+
+            $.ajax({
+                type: 'Post',
+                dataType: 'Json',
+                data: {
+                    coreUserId: @Model.CoreUserId,
+                    ddlDropBranch: $('#ddlDropBranch').val()
+                },
+                url: '@Url.Action("MoveAgent", "User")',
+                success: function (da) {
+                    if (da.Result == "Success") {
+                        document.location.reload(true)
+                       // toastr.success('user has been updated');
+                    } else {
+
+                        alert('Error' + da.Message);
+                    }
+                },
+                error: function (da) {
+                    alert('Error');
+                }
+            });
+    }
+</script>
+

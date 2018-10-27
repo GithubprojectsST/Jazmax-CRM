@@ -1,0 +1,28 @@
+﻿@model IEnumerable<JazMax.Web.ViewModel.UserAccountView.AgentDetailsView>
+@using JazMax.Core.SystemHelpers
+
+@{
+    ViewBag.Title = "Agents";
+    JazMaxIdentityHelper.UserName = HttpContext.Current.User.Identity.Name;
+
+}
+
+@if (JazMaxIdentityHelper.IsUserInRole("PA"))
+{
+    <h2>Agents in your province: @JazMaxIdentityHelper.GetPAUserInformation(User.Identity.Name).Province</h2>
+    <p>
+        @Html.ActionLink("Add Agent", "CreateAnAgent", "User")
+    </p>
+
+}
+else if (JazMaxIdentityHelper.IsUserInRole("TeamLeader"))
+{
+    <h2>Agents in your branch: @JazMaxIdentityHelper.GetTeamLeadersInfo(User.Identity.Name).BranchName</h2>
+    <p>
+        @Html.ActionLink("Add Agent", "CreateAgent", "User")
+    </p>
+}
+
+
+
+@Html.Partial("_List", Model)

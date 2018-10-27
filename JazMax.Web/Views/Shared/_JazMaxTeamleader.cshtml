@@ -1,0 +1,96 @@
+﻿@using JazMax.Core.SystemHelpers
+
+@{
+    JazMaxIdentityHelper.UserName = User.Identity.Name;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JazMax CRM</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    @Html.Partial("_PartialRef", null)
+    <link href="~/Content/Chosen/chosen.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("JazMax CRM", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Agents", "MyAgent", "Agent")</li>
+                    <li>@Html.ActionLink("Leads", "Search", "Leads", new { area = "Leads" }, null)</li>
+                    <li>@Html.ActionLink("Property", "Index", "PropertyListing", new { area = "Property" }, null)</li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Documents
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @{
+
+                                <li>@Html.ActionLink("All Documents", "Index", "Documents", new { area = "" }, null)</li>
+                                <li>@Html.ActionLink("Sent Documents", "PersonalSentDocuments", "Documents", new { area = "" }, null)</li>
+                                <li>@Html.ActionLink("Recieved Documents", "PersonalDocuments", "Documents", new { area = "" }, null)</li>
+                                <li>@Html.ActionLink("Incoming Documents", "IncomingDocuments", "Documents", new { area = "" }, null)</li>
+                                <li>@Html.ActionLink("Recycle Bin", "ArchivedDocuments", "Documents", new { area = "" }, null)</li>
+
+                            }
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @{
+
+                                <li>@Html.ActionLink("Leads By Agent", "LeadByAgent", "Report", new { area = "Leads" }, null)</li>
+                                <li>@Html.ActionLink("Leads By Branch", "LeadByBranch", "Report", new { area = "Leads" }, null)</li>
+                                <li>@Html.ActionLink("Leads By Activity", "LeadByActivity", "Report", new { area = "Leads" }, null)</li>
+                                <li>@Html.ActionLink("Lead Reminders", "Index", "Reminder", new { area = "Leads" }, null)</li>
+
+                            }
+                        </ul>
+                    </li>
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+    </div>
+
+    <style>
+        .modal-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) !important;
+        }
+    </style>
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/Scripts/chosen.jquery.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
