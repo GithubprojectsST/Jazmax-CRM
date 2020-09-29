@@ -28,7 +28,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JazMax.DataAccess", "JazMax.DataAccess\JazMax.DataAccess.csproj", "{629737F1-F624-4835-9794-0727B8C4DC96}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JazMax.WebJob.MoveLeads", "JazMax.WebJob.MoveLeads\JazMax.WebJob.MoveLeads.csproj", "{58E8F80B-4EF2-42D0-8742-5F9A28BA1636}"
-EndProject
+EndProject 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JazMax.WebJob.LeadReminder", "JazMax.WebJob.LeadReminder\JazMax.WebJob.LeadReminder.csproj", "{BD8AD510-1F40-4857-BB4C-88A1BAF32105}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JazMax.Leads", "JazMax.Leads", "{D2F292EF-2D7F-42E1-8832-55AEE9F9212E}"
